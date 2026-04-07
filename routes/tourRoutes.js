@@ -4,11 +4,11 @@ const tourController = require('../controllers/tourController');
 
 toursRouter.route('/').
   get(tourController.getAllTours).
-  post(tourController.checkBody, tourController.addTour);
+  post(tourController.createTour);
 
 toursRouter.route('/:id').
   delete(tourController.deleteTour).
-  get(tourController.getTourById).
+  get(tourController.getTour).
   patch(tourController.updateTour);
 
 module.exports = toursRouter;
