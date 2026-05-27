@@ -29,6 +29,12 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // 1) GLOBAL MIDDLEWARES
+// Expose env vars to all pug templates
+app.use((req, res, next) => {
+  res.locals.googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
+  next();
+});
+
 // Implement CORS
 app.use(cors());
 app.options('*', cors());

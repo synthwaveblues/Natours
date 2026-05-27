@@ -1,47 +1,32 @@
 /* eslint-disable */
 export const displayMap = locations => {
-  mapboxgl.accessToken =
-    'pk.eyJ1Ijoiam9uYXNzY2htZWR0bWFubiIsImEiOiJjam54ZmM5N3gwNjAzM3dtZDNxYTVlMnd2In0.ytpI7V7w7cyT1Kq5rT9Z1A';
-
-  var map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/jonasschmedtmann/cjvi9q8jd04mi1cpgmg7ev3dy',
-    scrollZoom: false
+  const map = new google.maps.Map(document.getElementById('map'), {
+    scrollwheel: false,
+    mapTypeId: 'roadmap'
   });
 
-  const bounds = new mapboxgl.LngLatBounds();
+  const bounds = new google.maps.LatLngBounds();
 
   locations.forEach(loc => {
-    // Create marker
-    const el = document.createElement('div');
-    el.className = 'marker';
+    // GeoJSON stores [lng, lat]; Google Maps uses { lat, lng }
+    const position = { lat: loc.coordinates[1], lng: loc.coordinates[0] };
 
-    // Add marker
-    new mapboxgl.Marker({
-      element: el,
-      anchor: 'bottom'
-    })
-      .setLngLat(loc.coordinates)
-      .addTo(map);
+    const marker = new google.maps.Marker({
+      position,
+      map,
+      icon: {
+        url: '/img/pin.png',
+        scaledSize: new google.maps.Size(32, 40),
+        anchor: new google.maps.Point(16, 40)
+      }
+    });
 
-    // Add popup
-    new mapboxgl.Popup({
-      offset: 30
-    })
-      .setLngLat(loc.coordinates)
-      .setHTML(`<p>Day ${loc.day}: ${loc.description}</p>`)
-      .addTo(map);
+    new google.maps.InfoWindow({
+      content: `<div class="map-popup"><p>Day ${loc.day}: ${loc.description}</p></div>`
+    }).open(map, marker);
 
-    // Extend map bounds to include current location
-    bounds.extend(loc.coordinates);
+    bounds.extend(position);
   });
 
-  map.fitBounds(bounds, {
-    padding: {
-      top: 200,
-      bottom: 150,
-      left: 100,
-      right: 100
-    }
-  });
+  map.fitBounds(bounds);
 };
